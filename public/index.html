@@ -5,6 +5,8 @@
 	<title>Chat</title>
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+	<link rel="stylesheet" href="css/arduino.css">
 </head>
 
 <body>
@@ -12,18 +14,28 @@
 	<h1>Basic Arduino example</h1>
 
 	<!-- Start socket identification (for debugging purposes) -->
+		<!--
 		<div id="id-box" class="id-box">
 			socket id: <span class="user-id"></span>
 		</div>
+		-->
 	<!-- Start socket identification (for debugging purposes) -->
 
 	<!-- Start socket-reloader (for debugging purposes) -->
+		<!--
 		<div id="socket-reloader">
 			<a id="reload-all-sockets" href="#">Reload all sockets</a>
 		</div>
+		-->
 	<!-- End socket-reloader (for debugging purposes) -->
+	
+	<div class="example">
+		<input type="checkbox" id="led-cb"> <label for="led-cb">Led op board</label>
+	</div>
 
-	<input type="checkbox" id="led"><label for="led">Led</label>
+	<div class="example">
+		<span class="led" id="led"></span> Button on board
+	</div>
 
 
 

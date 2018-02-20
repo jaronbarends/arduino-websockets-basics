@@ -11,7 +11,8 @@
 	//so let's stick to that.
 	// hubProxy is defined in socket.io-hub-proxy.js
 
-	const body = document.body;
+	const body = document.body,
+		led = document.getElementById('led');
 
 
 	/**
@@ -32,8 +33,8 @@
 	* @param {CustomEvent} evt - The event coming from the socket through the hubProxy
 	* @returns {undefined}
 	*/
-	const someEventHandler = function(evt) {
-		console.log('event data:', evt.detail);
+	const buttonDownHandler = function(evt) {
+		led.classList.toggle('led--is-on');
 	};
 	
 	
@@ -44,7 +45,7 @@
 	*/
 	const initHubProxyListeners = function() {
 		// example code:
-		body.addEventListener('someEventName.hub', someEventHandler);
+		body.addEventListener('buttonDown.j5.hub', buttonDownHandler);
 	};
 
 	/**
@@ -52,7 +53,7 @@
 	* @returns {undefined}
 	*/
 	const initToggle = function() {
-		const cb = document.getElementById('led');
+		const cb = document.getElementById('led-cb');
 		cb.addEventListener('change', (e) => {
 			const on = e.target.checked;
 			window.hubProxy.sendEvent('led', {

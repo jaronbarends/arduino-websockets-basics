@@ -88,9 +88,20 @@ const initClientConnections = function() {
 * @returns {undefined}
 */
 const initFive = function() {
-	five.Board().on('ready', function() {
-		console.log('Arduino is ready');
+	console.log('Arduino is ready');
+	const button = new five.Button({
+		pin: 11,
+		isPullup: true
 	});
+
+	button.on('down', () => {
+		const data = {
+			eventName: 'buttonDown.j5',
+			pin: 11
+		};
+		passThroughHandler(data);
+	});
+
 };
 
 
@@ -103,7 +114,7 @@ const initFive = function() {
 const init = function() {
 	initBasicRequirements();
 	initClientConnections();
-	initFive();
+	five.Board().on('ready', initFive);
 	console.log('Now running on http://localhost:' + port);
 };
 
