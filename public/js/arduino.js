@@ -58,13 +58,7 @@
 			window.hubProxy.sendEvent('led', {
 				on
 			});
-			// const led = new five.Led(8);
-
-			// if (on) {
-			// 	led.on();
-			// } else {
-			// 	led.off();
-			// }
+			
 		});
 	};
 	
