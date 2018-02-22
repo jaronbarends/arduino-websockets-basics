@@ -46,6 +46,7 @@
 	const initHubProxyListeners = function() {
 		// example code:
 		body.addEventListener('buttonDown.j5.hub', buttonDownHandler);
+		body.addEventListener('test.hub', () => {console.log('received test-event');});
 	};
 
 	/**
@@ -54,14 +55,27 @@
 	*/
 	const initToggle = function() {
 		const cb = document.getElementById('led-cb');
-		cb.addEventListener('change', (e) => {
-			const on = e.target.checked;
+		cb.addEventListener('change', (evt) => {
+			const isOn = e.target.checked;
 			window.hubProxy.sendEvent('led', {
-				on
+				isOn
 			});
 			
 		});
 	};
+
+	/**
+	* initialize test listener
+	* @returns {undefined}
+	*/
+	const initTestListener = function() {
+		const link = document.getElementById('passthrough-event');
+		link.addEventListener('click', (evt) => {
+			evt.preventDefault();
+			window.hubProxy.sendEventToClients('test', {zup: 'zap'})
+		});
+	};
+	
 	
 
 	
@@ -72,6 +86,7 @@
 	const init = function() {
 		initHubProxyListeners();
 		initToggle();
+		initTestListener();
 	};
 
 

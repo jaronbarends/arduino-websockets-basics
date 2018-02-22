@@ -9,7 +9,10 @@ let express,
 	port,
 	io,
 	clients,
-	five;
+	five,
+	bridge;
+
+const events = require('events');
 
 
 /**
@@ -57,7 +60,7 @@ const ledHandler = function(data) {
 	// console.log(data);
 	const led = new five.Led(8);
 
-	if (data.on) {
+	if (data.isOn) {
 		led.on();
 	} else {
 		led.off();
@@ -100,9 +103,21 @@ const initFive = function() {
 			pin: 11
 		};
 		passThroughHandler(data);
+		bridge.emit('test');
 	});
 
 };
+
+/**
+* initialize the bridge
+* @returns {undefined}
+*/
+const createBridge = function() {
+	bridge = new events.EventEmitter();
+
+	return bridge;
+};
+
 
 
 
@@ -116,6 +131,15 @@ const init = function() {
 	initClientConnections();
 	five.Board().on('ready', initFive);
 	console.log('Now running on http://localhost:' + port);
+
+	// const j5client = require('./node-scripts/j5-client.js');
+	// j5client.zup('ik ben zup');
+
+	const bridge = createBridge(); 
+
+	exports.io = io;
+	exports.five = five;
+	exports.bridge = bridge;
 };
 
 
