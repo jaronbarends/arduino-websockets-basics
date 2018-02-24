@@ -10,7 +10,7 @@ let express,
 	io,
 	clients,
 	five,
-	nodeProxy;// event proxy for node scripts
+	eventEmitter;// event proxy for node scripts
 
 const events = require('events');
 
@@ -35,14 +35,14 @@ const initBasicRequirements = function() {
 	// Make the files in the public folder available to the world
 	app.use(express.static(__dirname + '/public'));
 
-	five = require('johnny-five');
+	
 };
 
 
 
 /**
-* handle event that just has to be passed through to all sockets
-* this way, we don't have to listen for and handle specific events separately
+* handle event that just has to be passed through to all frontend socket-clients and node scripts
+* this way, we don't have to add listeners for and handle specific events separately
 * @param {object} data Object containing {string} eventName and [optional {object} eventData]
 * @returns {undefined}
 */
@@ -50,23 +50,12 @@ const passThroughHandler = function(data) {
 	const eventName = data.eventName;
 	if (eventName) {
 		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event eventName+'.hub'
-		nodeProxy.emit(eventName+'.hub', data.eventName);
+		console.log('go emit:', data);
+		eventEmitter.emit('hubevent', data);
 	}
 };
 
-/**
-* handle led toggle
-* @returns {undefined}
-*/
-const ledHandler = function(data) {
-	const led = new five.Led(8);
 
-	if (data.isOn) {
-		led.on();
-	} else {
-		led.off();
-	}
-};
 
 
 
@@ -81,33 +70,10 @@ const initClientConnections = function() {
 
 		//set handler for events that only have to be passsed on to all sockets
 		socket.on('passthrough', passThroughHandler);
-
-		//set handlers for j5 events
-		socket.on('led', ledHandler);
 	});
 };
 
-/**
-* initialize johnny-five
-* @returns {undefined}
-*/
-const initFive = function() {
-	console.log('Arduino is ready');
-	const button = new five.Button({
-		pin: 11,
-		isPullup: true
-	});
 
-	button.on('down', () => {
-		const data = {
-			eventName: 'buttonDown.j5',
-			pin: 11
-		};
-		passThroughHandler(data);
-		nodeProxy.emit('test');
-	});
-
-};
 
 
 
@@ -119,17 +85,12 @@ const initFive = function() {
 const init = function() {
 	initBasicRequirements();
 	initClientConnections();
-	five.Board().on('ready', initFive);
 	console.log('Now running on http://localhost:' + port);
 
-	// const j5client = require('./node-scripts/j5-client.js');
-	// j5client.zup('ik ben zup');
-
-	nodeProxy = new events.EventEmitter();
-
+	eventEmitter = new events.EventEmitter();
 	exports.io = io;
-	exports.five = five;
-	exports.hubProxy = nodeProxy;
+	exports.ioEventEmitter = eventEmitter;
+	exports.passThroughHandler = passThroughHandler;
 };
 
 

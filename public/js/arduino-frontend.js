@@ -56,8 +56,8 @@
 	const initToggle = function() {
 		const cb = document.getElementById('led-cb');
 		cb.addEventListener('change', (evt) => {
-			const isOn = e.target.checked;
-			window.hubProxy.sendEvent('led', {
+			const isOn = evt.target.checked;
+			window.hubProxy.sendEventToClients('led', {
 				isOn
 			});
 			
