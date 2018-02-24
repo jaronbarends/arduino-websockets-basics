@@ -8,11 +8,10 @@ let express,
 	app,
 	port,
 	io,
-	clients,
-	five,
-	eventEmitter;// event proxy for node scripts
-
-const events = require('events');
+	clients;
+	
+const events = require('events'),
+	eventEmitter = new events.EventEmitter();// event proxy for node scripts
 
 
 /**
@@ -50,13 +49,9 @@ const passThroughHandler = function(data) {
 	const eventName = data.eventName;
 	if (eventName) {
 		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event eventName+'.hub'
-		console.log('go emit:', data);
-		eventEmitter.emit('hubevent', data);
+		eventEmitter.emit('hubevent', data);// socket-io-node-bridge.js will pick this up and emit event eventName+'.hub'
 	}
 };
-
-
-
 
 
 /**
@@ -87,7 +82,6 @@ const init = function() {
 	initClientConnections();
 	console.log('Now running on http://localhost:' + port);
 
-	eventEmitter = new events.EventEmitter();
 	exports.io = io;
 	exports.ioEventEmitter = eventEmitter;
 	exports.passThroughHandler = passThroughHandler;

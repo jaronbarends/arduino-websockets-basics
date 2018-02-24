@@ -3,13 +3,11 @@ const hubProxy = nodeBridge.hubProxy;
 const five = require('johnny-five');
 
 
-
 /**
 * handle led toggle
 * @returns {undefined}
 */
 const ledHandler = function(data) {
-	console.log('ledHandler');
 	const led = new five.Led(8);
 
 	if (data.isOn) {
@@ -18,7 +16,6 @@ const ledHandler = function(data) {
 		led.off();
 	}
 };
-
 
 
 /**
@@ -33,13 +30,10 @@ const initFive = function() {
 	});
 
 	button.on('down', () => {
-		console.log('button down');
 		const data = {
 			pin: 11
 		};
-		// nodeBridge.sendEventToClients('buttonDown.j5', data);
 		hubProxy.sendEventToClients('buttonDown.j5', data);
-		// passThroughHandler(data);
 	});
 
 };
@@ -51,15 +45,7 @@ const initFive = function() {
 */
 const init = function() {
 	five.Board().on('ready', initFive);
-	// nodeBridge.eventEmitter.on('led.hub', ledHandler);
 	hubProxy.on('led.hub', ledHandler);
-
-	console.log('on:', nodeBridge.on);
-	console.log('eventEmitter.on:', nodeBridge.eventEmitter.on);
-
-	nodeBridge.eventEmitter.on('test', () => {
-		console.log('app.js received test on nodeBridge');
-	});
 };
 
 init();
