@@ -1,9 +1,18 @@
 const socketServer = require('./socket-j5-server.js');
-const io = socketServer.io;
-const five = socketServer.five;
-const bridge = socketServer.bridge;
+// create shorter versions of socketServer properties
+const {io, five, hubProxy} = socketServer;
+// const five = socketServer.five;
+// const hubProxy = socketServer.hubProxy;
 
-bridge.on('test', () => {
+hubProxy.on('test', () => {
 	console.log('test!');
+});
+
+hubProxy.on('test.hub', (data) => {
+	console.log('test.hub', data);
+});
+
+io.on('hubevent', (data) => {
+	console.log('hubevent from io');
 });
 

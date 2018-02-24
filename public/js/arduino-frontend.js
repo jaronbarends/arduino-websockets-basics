@@ -37,7 +37,6 @@
 		led.classList.toggle('led--is-on');
 	};
 	
-	
 
 	/**
 	* add listeners for body-events coming from the hub through the hubProxy
@@ -48,6 +47,7 @@
 		body.addEventListener('buttonDown.j5.hub', buttonDownHandler);
 		body.addEventListener('test.hub', () => {console.log('received test-event');});
 	};
+
 
 	/**
 	* initialize led toggle
@@ -63,6 +63,7 @@
 			
 		});
 	};
+
 
 	/**
 	* initialize test listener

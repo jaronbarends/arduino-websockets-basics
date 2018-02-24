@@ -10,7 +10,7 @@ let express,
 	io,
 	clients,
 	five,
-	bridge;
+	nodeProxy;// event proxy for node scripts
 
 const events = require('events');
 
@@ -47,8 +47,10 @@ const initBasicRequirements = function() {
 * @returns {undefined}
 */
 const passThroughHandler = function(data) {
-	if (data.eventName) {
-		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event
+	const eventName = data.eventName;
+	if (eventName) {
+		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event eventName+'.hub'
+		nodeProxy.emit(eventName+'.hub', data.eventName);
 	}
 };
 
@@ -57,7 +59,6 @@ const passThroughHandler = function(data) {
 * @returns {undefined}
 */
 const ledHandler = function(data) {
-	// console.log(data);
 	const led = new five.Led(8);
 
 	if (data.isOn) {
@@ -103,21 +104,10 @@ const initFive = function() {
 			pin: 11
 		};
 		passThroughHandler(data);
-		bridge.emit('test');
+		nodeProxy.emit('test');
 	});
 
 };
-
-/**
-* initialize the bridge
-* @returns {undefined}
-*/
-const createBridge = function() {
-	bridge = new events.EventEmitter();
-
-	return bridge;
-};
-
 
 
 
@@ -135,11 +125,11 @@ const init = function() {
 	// const j5client = require('./node-scripts/j5-client.js');
 	// j5client.zup('ik ben zup');
 
-	const bridge = createBridge(); 
+	nodeProxy = new events.EventEmitter();
 
 	exports.io = io;
 	exports.five = five;
-	exports.bridge = bridge;
+	exports.hubProxy = nodeProxy;
 };
 
 
