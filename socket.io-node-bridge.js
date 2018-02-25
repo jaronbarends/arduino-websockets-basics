@@ -1,9 +1,7 @@
 const events = require('events');
 const socketServer = require('./socket-j5-server.js');
-// create shorter versions of socketServer properties
-const io = socketServer.io;// send events here
-const ioEventEmitter = socketServer.ioEventEmitter;// listen on this one for events
-const hubProxy = new events.EventEmitter();// object that will be exported
+const ioEventBus = socketServer.nodeEventBus;// object to pass events to and from socket server
+const hubProxy = new events.EventEmitter();// object to pass events to and from other node scripts; will be exported so scripts that require this very file can use it
 
 
 /**
@@ -13,9 +11,9 @@ const hubProxy = new events.EventEmitter();// object that will be exported
 * @returns {undefined}
 */
 const sendHubEvent = function(eventName, data) {
-	// unlike on the frontend, this isn't a socket io can listen to
-	// so if we want to have an event handled bywe have to invoke its event handler directlty
-	io.emit(eventName, data);
+	// unlike on the frontend, this very script isn't a socket io can listen to
+	// so we have a special object on io to emit events on
+	ioEventBus.emit(eventName, data);
 };
 
 
@@ -32,10 +30,8 @@ const sendEventToClients = function(eventName, eventData) {
 	};
 	// trigger passthroughHandler on hub; hub will just forward it to all clients
 	// unlike on the frontend, this isn't a socket io can listen to
-	// so we have to invoke its event handler directlty
-	// socketServer.passThroughHandler(data);
-	socketServer.nodeEventEmitter.emit('passthrough', data);
-	socketServer.nodeEventEmitter.emit('someEvent', {foo:'bar'});
+	// so we have a special object on io to emit events on
+	ioEventBus.emit('passthrough', data);
 };
 
 
@@ -58,7 +54,7 @@ const hubeventHandler = function(data) {
 */
 const init = function() {
 	// listen for events coming from io
-	ioEventEmitter.on('hubevent', hubeventHandler);
+	ioEventBus.on('hubevent', hubeventHandler);
 
 	// extend hubProxy object with methods
 	hubProxy.sendEvent = sendHubEvent;

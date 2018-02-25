@@ -11,8 +11,7 @@ let express,
 	clients;
 	
 const events = require('events'),
-	ioEventEmitter = new events.EventEmitter();// event proxy for node scripts
-	nodeEventEmitter = new events.EventEmitter();// to have node scripts emit events on server
+	nodeEventBus = new events.EventEmitter();// object to communicate events to and from other node scripts
 
 
 /**
@@ -50,7 +49,7 @@ const passThroughHandler = function(data) {
 	const eventName = data.eventName;
 	if (eventName) {
 		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event eventName+'.hub'
-		ioEventEmitter.emit('hubevent', data);// socket-io-node-bridge.js will pick this up and emit event eventName+'.hub'
+		nodeEventBus.emit('hubevent', data);// socket-io-node-bridge.js will pick this up and emit event eventName+'.hub'
 	}
 };
 
@@ -66,10 +65,7 @@ const initClientConnections = function() {
 
 		//set handler for events that only have to be passsed on to all sockets
 		socket.on('passthrough', passThroughHandler);
-		nodeEventEmitter.on('passthrough', passThroughHandler);
-		nodeEventEmitter.on('someEvent', (data) => {
-			console.log('someEvent', data);
-		});
+		nodeEventBus.on('passthrough', passThroughHandler);
 	});
 };
 
@@ -87,10 +83,7 @@ const init = function() {
 	initClientConnections();
 	console.log('Server now running on http://localhost:' + port);
 
-	exports.io = io;
-	exports.ioEventEmitter = ioEventEmitter;
-	exports.nodeEventEmitter = nodeEventEmitter;
-	exports.passThroughHandler = passThroughHandler;
+	exports.nodeEventBus = nodeEventBus;
 };
 
 
