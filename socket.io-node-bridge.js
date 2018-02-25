@@ -13,12 +13,14 @@ const hubProxy = new events.EventEmitter();// object that will be exported
 * @returns {undefined}
 */
 const sendHubEvent = function(eventName, data) {
+	// unlike on the frontend, this isn't a socket io can listen to
+	// so if we want to have an event handled bywe have to invoke its event handler directlty
 	io.emit(eventName, data);
 };
 
 
 /**
-* send an event to the hub to have it passed on to all clients
+* make the hub send an event to all clients
 * @param {string} eventName The name of the event to send
 * @param {object} data The event's data
 * @returns {undefined}
@@ -29,7 +31,11 @@ const sendEventToClients = function(eventName, eventData) {
 		eventData
 	};
 	// trigger passthroughHandler on hub; hub will just forward it to all clients
-	socketServer.passThroughHandler(data);
+	// unlike on the frontend, this isn't a socket io can listen to
+	// so we have to invoke its event handler directlty
+	// socketServer.passThroughHandler(data);
+	socketServer.nodeEventEmitter.emit('passthrough', data);
+	socketServer.nodeEventEmitter.emit('someEvent', {foo:'bar'});
 };
 
 

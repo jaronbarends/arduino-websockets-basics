@@ -34,6 +34,7 @@ const initFive = function() {
 			pin: 11
 		};
 		hubProxy.sendEventToClients('buttonDown.j5', data);
+		hubProxy.sendEvent('test', {foo:'bar'});
 	});
 
 };
