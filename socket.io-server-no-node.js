@@ -9,9 +9,6 @@ let express,
 	port,
 	io,
 	clients;
-	
-const events = require('events'),
-	nodeEventBus = new events.EventEmitter();// object to communicate events to and from other node scripts
 
 
 /**
@@ -33,23 +30,19 @@ const initBasicRequirements = function() {
 
 	// Make the files in the public folder available to the world
 	app.use(express.static(__dirname + '/public'));
-
-	
 };
 
 
 
 /**
-* handle event that just has to be passed through to all frontend socket-clients and node scripts
-* this way, we don't have to add listeners for and handle specific events separately
+* handle event that just has to be passed through to all sockets
+* this way, we don't have to listen for and handle specific events separately
 * @param {object} data Object containing {string} eventName and [optional {object} eventData]
 * @returns {undefined}
 */
 const passThroughHandler = function(data) {
-	const eventName = data.eventName;
-	if (eventName) {
-		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event eventName+'.hub'
-		nodeEventBus.emit('hubevent', data);// socket-io-node-bridge.js will pick this up and emit event eventName+'.hub'
+	if (data.eventName) {
+		clients.emit('hubevent', data);// hub-client-socketIO.js will pick this up and fire body event
 	}
 };
 
@@ -65,12 +58,8 @@ const initClientConnections = function() {
 
 		//set handler for events that only have to be passsed on to all sockets
 		socket.on('passthrough', passThroughHandler);
-		nodeEventBus.on('passthrough', passThroughHandler);
 	});
 };
-
-
-
 
 
 /**
@@ -81,9 +70,7 @@ const initClientConnections = function() {
 const init = function() {
 	initBasicRequirements();
 	initClientConnections();
-	console.log('Server now running on http://localhost:' + port);
-
-	exports.nodeEventBus = nodeEventBus;
+	console.log('Now running on http://localhost:' + port);
 };
 
 

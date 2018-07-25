@@ -58,3 +58,25 @@ body.addEventListener('someEventName.hub', (evt) => {
     console.log('event data:', evt.detail);
 }));
 ````
+
+### Using another Node script
+
+In your node script (let's call it app.js), require the node bridge, and create a variable for its ``hubProxy`` object:
+````javascript
+const nodeBridge = require('./socket.io-node-bridge.js');
+const hubProxy = nodeBridge.hubProxy;
+````
+
+Send events to all clients:
+````javascript
+const data = {foo: bar};
+hubProxy.sendEventToClients('someEventName', data);
+````
+This sends an event to the socket server, which then sends it back to all socket clients (both frontend and backend)
+
+To make a script listen to that event:
+````javascript
+hubProxy.on('someEventName.hub', (data) => {
+    console.log('data:', data);
+}));
+````

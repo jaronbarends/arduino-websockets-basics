@@ -1,5 +1,5 @@
 const events = require('events');
-const socketServer = require('./socket-j5-server.js');
+const socketServer = require('./socket.io-server.js');
 const ioEventBus = socketServer.nodeEventBus;// object to pass events to and from socket server
 const hubProxy = new events.EventEmitter();// object to pass events to and from other node scripts; will be exported so scripts that require this very file can use it
 
@@ -44,7 +44,7 @@ const hubeventHandler = function(data) {
 		eventData = data.eventData;
 
 	// trigger the appropriate event
-	hubProxy.emit(eventName, eventData)
+	hubProxy.emit(eventName, eventData);
 };
 
 
