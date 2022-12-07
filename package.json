@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "remote devices with sockets",
   "dependencies": {
-    "express": "^4.15.2",
+    "express": "^4.18.2",
     "johnny-five": "^0.13.0",
     "socket.io": "^2.4.0"
   },
